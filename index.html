@@ -1,587 +1,161 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wasserfußabdruck-Rechner</title>
-    <!-- Tabler Icons CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@2.44.0/tabler-icons.min.css">
-    <style>
-        /* Reset und Grundstyles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        /* CSS Custom Properties mit festen Hex-Fallbacks */
-        :root {
-            --color-background-primary: #ffffff;
-            --color-background-secondary: #f8f9fa;
-            --color-background-info: #e8f4fd;
-            --color-background-success: #eaf7ed;
-            --color-background-warning: #fff9db;
-            --color-background-danger: #ffe3e3;
-            --color-border-primary: #e9ecef;
-            --color-border-secondary: #ced4da;
-            --color-border-tertiary: #dee2e6;
-            --color-border-info: #339af0;
-            --color-border-success: #51cf66;
-            --color-border-warning: #fcc419;
-            --color-border-danger: #ff6b6b;
-            --color-text-primary: #212529;
-            --color-text-secondary: #495057;
-            --color-text-info: #1c7ed6;
-            --color-text-success: #37b24d;
-            --color-text-warning: #f59f00;
-            --color-text-danger: #f03e3e;
-            --color-accent: #339af0;
-            --color-accent-hover: #1c7ed6;
-            --border-radius-sm: 4px;
-            --border-radius-md: 6px;
-            --border-radius-lg: 12px;
-            --transition-fast: 0.15s ease;
-            --transition-normal: 0.3s ease;
-        }
-
-        /* Grundstyling für die Webseite */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #f1f3f5 0%, #e9ecef 100%);
-            color: var(--color-text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Hauptcontainer */
-        .container {
-            background: var(--color-background-primary);
-            padding: 40px;
-            border-radius: var(--border-radius-lg);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            max-width: 600px;
-            width: 100%;
-            animation: slideInUp 0.4s ease;
-        }
-
-        /* Header mit Icon und Titel */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header-icon {
-            font-size: 48px;
-            color: var(--color-accent);
-            margin-bottom: 12px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--color-text-primary);
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            font-size: 14px;
-            color: var(--color-text-secondary);
-        }
-
-        /* Section Titel */
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--color-text-primary);
-            margin: 24px 0 16px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title i {
-            color: var(--color-accent);
-            font-size: 20px;
-        }
-
-        /* Input-Bereich */
-        .input-group {
-            margin-bottom: 16px;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--color-text-secondary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
-        }
-
-        input[type="number"],
-        select {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid var(--color-border-secondary);
-            border-radius: var(--border-radius-md);
-            font-size: 14px;
-            font-family: inherit;
-            background: var(--color-background-primary);
-            color: var(--color-text-primary);
-            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-        }
-
-        input[type="number"]:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--color-accent);
-            box-shadow: 0 0 0 3px rgba(51, 154, 240, 0.1);
-        }
-
-        input[type="number"]::placeholder {
-            color: var(--color-text-secondary);
-        }
-
-        /* Button Styling */
-        button {
-            background: var(--color-accent);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--border-radius-md);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            font-family: inherit;
-            transition: background var(--transition-fast), transform var(--transition-fast);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        button:hover {
-            background: var(--color-accent-hover);
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: scale(0.98) translateY(0);
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        button i {
-            font-size: 16px;
-        }
-
-        /* Progress Bar */
-        .progress-bar {
-            height: 4px;
-            background: var(--color-background-secondary);
-            border-radius: 2px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
-            border-radius: 2px;
-            transition: width var(--transition-normal);
-            width: 0%;
-        }
-
-        /* Results Section */
-        .results {
-            background: var(--color-background-secondary);
-            border: 1px solid var(--color-border-tertiary);
-            border-radius: var(--border-radius-md);
-            padding: 20px;
-            margin-top: 24px;
-            animation: slideInUp 0.4s ease;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--color-border-tertiary);
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .result-label {
-            font-size: 13px;
-            color: var(--color-text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .result-label i {
-            font-size: 18px;
-            color: var(--color-accent);
-        }
-
-        .result-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--color-text-primary);
-        }
-
-        .result-unit {
-            font-size: 12px;
-            color: var(--color-text-secondary);
-            margin-left: 4px;
-        }
-
-        /* Info Box */
-        .info-box {
-            background: var(--color-background-info);
-            border: 1px solid var(--color-border-info);
-            border-radius: var(--border-radius-md);
-            padding: 12px 14px;
-            margin-top: 20px;
-            font-size: 13px;
-            color: var(--color-text-info);
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-
-        .info-box i {
-            flex-shrink: 0;
-            font-size: 18px;
-            margin-top: 2px;
-        }
-
-        /* Badge Styling */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: var(--border-radius-md);
-            font-size: 12px;
-            font-weight: 500;
-            border: 0.5px solid;
-        }
-
-        .badge-success {
-            background: var(--color-background-success);
-            color: var(--color-text-success);
-            border-color: var(--color-border-success);
-        }
-
-        .badge-warning {
-            background: var(--color-background-warning);
-            color: var(--color-text-warning);
-            border-color: var(--color-border-warning);
-        }
-
-        .badge-danger {
-            background: var(--color-background-danger);
-            color: var(--color-text-danger);
-            border-color: var(--color-border-danger);
-        }
-
-        /* Animations */
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 640px) {
-            .container {
-                padding: 24px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .header-icon {
-                font-size: 40px;
-            }
-
-            .input-wrapper {
-                flex-direction: column;
-            }
-
-            input[type="number"],
-            select,
-            button {
-                width: 100%;
-            }
-
-            .result-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-icon">
-                <i class="ti ti-leaf"></i>
-            </div>
-            <h1>Wasserfußabdruck</h1>
-            <p>Berechne deinen persönlichen Wasserfußabdruck</p>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
-        </div>
-
-        <!-- Input Sections -->
-        <form id="waterCalculatorForm">
-            <!-- Ernährung -->
-            <div class="section-title">
-                <i class="ti ti-apple"></i>
-                Ernährung
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Fleischkonsum pro Woche (kg)</label>
-                <input type="number" id="meatPerWeek" placeholder="z.B. 1" min="0" step="0.1">
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Gemüsekonsum pro Woche (kg)</label>
-                <input type="number" id="vegetablesPerWeek" placeholder="z.B. 5" min="0" step="0.1">
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Milchprodukte pro Woche (Liter/kg)</label>
-                <input type="number" id="dairyPerWeek" placeholder="z.B. 2" min="0" step="0.1">
-            </div>
-
-            <!-- Wasser & Hygiene -->
-            <div class="section-title">
-                <i class="ti ti-droplet"></i>
-                Wasser & Hygiene
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Duschzeit pro Tag (Minuten)</label>
-                <input type="number" id="showerTime" placeholder="z.B. 10" min="0" step="1">
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Toilettenspülungen pro Tag</label>
-                <input type="number" id="toiletFlushes" placeholder="z.B. 6" min="0" step="1">
-            </div>
-
-            <!-- Kleidung -->
-            <div class="section-title">
-                <i class="ti ti-shirt"></i>
-                Kleidung
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Neue Kleidungsstücke pro Jahr</label>
-                <input type="number" id="newClothesPerYear" placeholder="z.B. 20" min="0" step="1">
-            </div>
-
-            <!-- Transport -->
-            <div class="section-title">
-                <i class="ti ti-car"></i>
-                Transport
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Autofahrten pro Woche (km)</label>
-                <input type="number" id="carDrivingPerWeek" placeholder="z.B. 100" min="0" step="1">
-            </div>
-
-            <div class="input-group">
-                <label class="input-label">Flugreisen pro Jahr (Stunden)</label>
-                <input type="number" id="flightHoursPerYear" placeholder="z.B. 5" min="0" step="0.5">
-            </div>
-
-            <!-- Button -->
-            <div class="input-group" style="margin-top: 28px;">
-                <button type="button" id="calculateBtn" onclick="calculateWaterFootprint()">
-                    <i class="ti ti-calculator"></i>
-                    Wasserfußabdruck berechnen
-                </button>
-            </div>
-        </form>
-
-        <!-- Results Section -->
-        <div id="resultsContainer" style="display: none;">
-            <div class="results">
-                <div class="result-item">
-                    <span class="result-label">
-                        <i class="ti ti-droplet"></i>
-                        Gesamtwasserfußabdruck pro Jahr
-                    </span>
-                    <span class="result-value">
-                        <span id="totalWaterFootprint">0</span>
-                        <span class="result-unit">Liter</span>
-                    </span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">
-                        <i class="ti ti-chart-pie"></i>
-                        Davon durch Ernährung
-                    </span>
-                    <span class="result-value">
-                        <span id="foodWaterFootprint">0</span>
-                        <span class="result-unit">%</span>
-                    </span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">
-                        <i class="ti ti-droplet-half"></i>
-                        Wasser & Hygiene
-                    </span>
-                    <span class="result-value">
-                        <span id="waterUsage">0</span>
-                        <span class="result-unit">%</span>
-                    </span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">
-                        <i class="ti ti-shirt"></i>
-                        Kleidung & Textilien
-                    </span>
-                    <span class="result-value">
-                        <span id="clothingFootprint">0</span>
-                        <span class="result-unit">%</span>
-                    </span>
-                </div>
-
-                <div class="result-item">
-                    <span class="result-label">
-                        <i class="ti ti-car"></i>
-                        Transport & Mobilität
-                    </span>
-                    <span class="result-value">
-                        <span id="transportFootprint">0</span>
-                        <span class="result-unit">%</span>
-                    </span>
-                </div>
-            </div>
-
-            <!-- Info Box -->
-            <div class="info-box">
-                <i class="ti ti-info-circle"></i>
-                <div>
-                    <strong>Tipp:</strong> Der globale Durchschnittswasserfußabdruck liegt bei etwa 1,4 Millionen Litern pro Person pro Jahr. Versuche, deinen Fußabdruck durch bewusste Entscheidungen zu reduzieren!
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function calculateWaterFootprint() {
-            // Input-Werte auslesen
-            const meatPerWeek = parseFloat(document.getElementById('meatPerWeek').value) || 0;
-            const vegetablesPerWeek = parseFloat(document.getElementById('vegetablesPerWeek').value) || 0;
-            const dairyPerWeek = parseFloat(document.getElementById('dairyPerWeek').value) || 0;
-            const showerTime = parseFloat(document.getElementById('showerTime').value) || 0;
-            const toiletFlushes = parseFloat(document.getElementById('toiletFlushes').value) || 0;
-            const newClothesPerYear = parseFloat(document.getElementById('newClothesPerYear').value) || 0;
-            const carDrivingPerWeek = parseFloat(document.getElementById('carDrivingPerWeek').value) || 0;
-            const flightHoursPerYear = parseFloat(document.getElementById('flightHoursPerYear').value) || 0;
-
-            // Wasserfußabdruck-Faktoren (in Litern)
-            const meatFactor = 15000; // Liter pro kg Fleisch
-            const vegetableFactor = 300; // Liter pro kg Gemüse
-            const dairyFactor = 1000; // Liter pro kg/Liter Milchprodukte
-            const showerFactor = 9; // Liter pro Minute (ca. 9L/min)
-            const toiletFactor = 6; // Liter pro Spülung
-            const clothesFactor = 7000; // Liter pro Kleidungsstück
-            const carFactor = 1; // Liter pro km
-            const flightFactor = 50000; // Liter pro Flugstunde
-
-            // Berechnungen
-            const foodWater = (meatPerWeek * meatFactor + vegetablesPerWeek * vegetableFactor + dairyPerWeek * dairyFactor) * 52;
-            const waterUsageAnnual = (showerTime * showerFactor * 365 + toiletFlushes * toiletFactor * 365);
-            const clothingWater = newClothesPerYear * clothesFactor;
-            const transportWater = (carDrivingPerWeek * carFactor * 52) + (flightHoursPerYear * flightFactor);
-
-            const totalWater = foodWater + waterUsageAnnual + clothingWater + transportWater;
-
-            // Prozentuale Anteile berechnen
-            const foodPercent = totalWater > 0 ? ((foodWater / totalWater) * 100).toFixed(1) : 0;
-            const waterPercent = totalWater > 0 ? ((waterUsageAnnual / totalWater) * 100).toFixed(1) : 0;
-            const clothingPercent = totalWater > 0 ? ((clothingWater / totalWater) * 100).toFixed(1) : 0;
-            const transportPercent = totalWater > 0 ? ((transportWater / totalWater) * 100).toFixed(1) : 0;
-
-            // Progress Bar Update
-            const progressPercentage = Math.min((totalWater / 1000000) * 100, 100);
-            document.getElementById('progressFill').style.width = progressPercentage + '%';
-
-            // Ergebnisse anzeigen
-            document.getElementById('totalWaterFootprint').textContent = totalWater.toLocaleString('de-DE', { maximumFractionDigits: 0 });
-            document.getElementById('foodWaterFootprint').textContent = foodPercent;
-            document.getElementById('waterUsage').textContent = waterPercent;
-            document.getElementById('clothingFootprint').textContent = clothingPercent;
-            document.getElementById('transportFootprint').textContent = transportPercent;
-
-            // Results Container anzeigen
-            document.getElementById('resultsContainer').style.display = 'block';
-            document.getElementById('resultsContainer').classList.add('fade-in');
-
-            // Smooth scroll zu Ergebnissen
-            setTimeout(() => {
-                document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-        }
-
-        // Enter-Taste zum Berechnen
-        document.getElementById('waterCalculatorForm').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                calculateWaterFootprint();
-            }
-        });
-    </script>
-</body>
-</html>
+<h2 class="sr-only">Persönlicher Wasserfußabdruck-Rechner für Deutschland – Berechne deinen täglichen Wasserverbrauch in Litern</h2>
+<div id="wfr" style="padding:0.5rem 0;"></div>
+<style>
+.wfr-s{animation:wfr-fi 0.2s ease}
+@keyframes wfr-fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.wfr-opt{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;text-align:left;margin-bottom:8px;font-family:inherit;font-size:inherit}
+.wfr-opt:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
+.wfr-opt:active{transform:scale(0.99)}
+.wfr-pb{height:3px;background:var(--color-background-secondary);border-radius:3px;margin-bottom:1.4rem;overflow:hidden}
+.wfr-pf{height:100%;border-radius:3px;transition:width 0.35s ease}
+.wfr-bdg{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;border:0.5px solid}
+.wfr-bbar{background:var(--color-background-secondary);border-radius:4px;height:7px;overflow:hidden;margin-top:4px}
+.wfr-bf{height:100%;border-radius:4px}
+</style>
+<script>
+(function(){
+const GA=5288;
+const CAT={
+  haushalt:{l:'Haushalt',ic:'ti-home',col:'var(--color-border-info)',bg:'var(--color-background-info)',tc:'var(--color-text-info)'},
+  ernaehrung:{l:'Ernährung',ic:'ti-leaf',col:'var(--color-border-success)',bg:'var(--color-background-success)',tc:'var(--color-text-success)'},
+  kleidung:{l:'Kleidung & Konsum',ic:'ti-hanger',col:'var(--color-border-danger)',bg:'var(--color-background-danger)',tc:'var(--color-text-danger)'},
+  energie:{l:'Energie',ic:'ti-bolt',col:'var(--color-border-warning)',bg:'var(--color-background-warning)',tc:'var(--color-text-warning)'},
+  sonstiges:{l:'Sonstiges',ic:'ti-package',col:'var(--color-border-tertiary)',bg:'var(--color-background-secondary)',tc:'var(--color-text-secondary)'},
+};
+const QS=[
+  {id:'groesse',cat:'haushalt',q:'Wie viele Personen leben in deinem Haushalt?',hint:'Gemeinsam genutzte Ressourcen werden anteilig berechnet.',opts:[{v:'1',l:'1 Person',s:'Alleine wohnen'},{v:'2',l:'2 Personen',s:'Paar oder WG-Zimmer'},{v:'3-4',l:'3–4 Personen',s:'Kleine Familie oder WG'},{v:'5p',l:'5 oder mehr',s:'Großhaushalt'}]},
+  {id:'duschen',cat:'haushalt',q:'Wie lange duscht oder badest du täglich?',hint:'Eine 10-Minuten-Dusche verbraucht ca. 100 Liter Wasser.',opts:[{v:'lt5',l:'Kurze Dusche',s:'Unter 5 Minuten'},{v:'5-10',l:'Normale Dusche',s:'5–10 Minuten'},{v:'gt10',l:'Lange Dusche',s:'Über 10 Minuten'},{v:'bad',l:'Vollbad',s:'Täglich Badewanne'}]},
+  {id:'waesche',cat:'haushalt',q:'Wie oft wäschst du Wäsche pro Woche?',hint:'Ein Waschgang verbraucht ca. 50–70 Liter Wasser.',opts:[{v:'1x',l:'1× oder seltener',s:''},{v:'2-3x',l:'2–3× pro Woche',s:''},{v:'4px',l:'4× oder öfter',s:''}]},
+  {id:'fleisch',cat:'ernaehrung',q:'Wie oft isst du Fleisch oder Fisch?',hint:'Für 1 kg Rindfleisch werden bis zu 15.000 Liter Wasser benötigt.',opts:[{v:'vegan',l:'Vegan',s:'Keine tierischen Produkte'},{v:'veg',l:'Vegetarisch',s:'Kein Fleisch oder Fisch'},{v:'sel',l:'Gelegentlich',s:'2–3× pro Woche'},{v:'tgl',l:'Täglich',s:'Ca. einmal täglich'},{v:'oft',l:'Sehr oft',s:'Mehrmals täglich'}]},
+  {id:'milch',cat:'ernaehrung',q:'Wie viele Milchprodukte konsumierst du täglich?',hint:'1 Liter Kuhmilch benötigt ca. 1.000 Liter Wasser bei der Produktion.',opts:[{v:'keine',l:'Keine',s:'Pflanzliche Alternativen'},{v:'wenig',l:'Wenig',s:'1 Portion täglich'},{v:'norm',l:'Normal',s:'2–3 Portionen'},{v:'viel',l:'Viel',s:'4+ Portionen täglich'}]},
+  {id:'kaffee',cat:'ernaehrung',q:'Wie viel Kaffee oder Tee trinkst du täglich?',hint:'Eine Tasse Kaffee enthält ca. 132 Liter virtuelles Wasser – Tee nur ca. 30 Liter.',opts:[{v:'k0',l:'Keinen / keinen',s:'Nur Wasser oder Säfte'},{v:'k1',l:'1 Tasse',s:''},{v:'k23',l:'2–3 Tassen',s:''},{v:'k4p',l:'4+ Tassen',s:''}]},
+  {id:'regional',cat:'ernaehrung',q:'Kaufst du Lebensmittel regional und saisonal?',hint:'Regionale Produkte schonen Wasserressourcen in wasserarmen Erzeugerländern.',opts:[{v:'ja',l:'Meist ja',s:'Wochenmarkt, Bioläden, Direktkauf'},{v:'mchm',l:'Manchmal',s:'Gemischter Einkauf'},{v:'nein',l:'Selten oder nie',s:'Supermarkt, viele Importwaren'}]},
+  {id:'kleidung',cat:'kleidung',q:'Wie viele neue Kleidungsstücke kaufst du pro Monat?',hint:'Ein T-Shirt benötigt ca. 2.700 Liter, eine Jeans ca. 8.000 Liter Wasser.',opts:[{v:'c01',l:'0–1 Stück',s:'Ich kaufe kaum neu'},{v:'c23',l:'2–3 Stücke',s:''},{v:'c46',l:'4–6 Stücke',s:''},{v:'c7p',l:'7 oder mehr',s:'Fast Fashion'}]},
+  {id:'secondhand',cat:'kleidung',q:'Kaufst du auch Second-Hand-Kleidung?',hint:'Gebrauchte Kleidung spart nahezu 100% des virtuellen Wassers eines Kleidungsstücks.',opts:[{v:'oft',l:'Oft',s:'Hauptsächlich Second-Hand'},{v:'mchm',l:'Manchmal',s:''},{v:'nie',l:'Selten oder nie',s:''}]},
+  {id:'strom',cat:'energie',q:'Welchen Strom beziehst du?',hint:'Kohle- und Gaskraftwerke brauchen viel Kühlwasser – Solar und Wind kaum.',opts:[{v:'oeko',l:'Ökostrom',s:'Wind, Solar, Wasserkraft'},{v:'mix',l:'Standard-Mix',s:'Normaler Haushaltstarif'},{v:'unkn',l:'Weiß ich nicht',s:''}]},
+  {id:'heizung',cat:'energie',q:'Womit wird dein Zuhause hauptsächlich beheizt?',hint:'Gas- und Ölheizungen benötigen indirekt mehr Wasser als erneuerbare Alternativen.',opts:[{v:'gas',l:'Gas oder Öl',s:'Fossile Brennstoffe'},{v:'wp',l:'Wärmepumpe',s:'Elektrisch betrieben'},{v:'fw',l:'Fernwärme',s:'Zentralversorgung'},{v:'holz',l:'Holz oder Biomasse',s:'Nachwachsende Rohstoffe'}]},
+];
+
+function calc(a){
+  const sm={1:1.0,2:0.85,'3-4':0.75,'5p':0.65};
+  const sv={lt5:45,'5-10':90,gt10:150,bad:210};
+  const lv={'1x':14,'2-3x':36,'4px':57};
+  const haushalt=Math.round((125+(sv[a.duschen]||90)+(lv[a.waesche]||36))*(sm[a.groesse]||1.0));
+  const mb={vegan:1800,veg:2300,sel:3000,tgl:3700,oft:5000};
+  const da={keine:0,wenig:200,norm:600,viel:1000};
+  const ca={k0:0,k1:132,k23:300,k4p:530};
+  const rm={ja:0.88,mchm:0.94,nein:1.0};
+  const ernaehrung=Math.round(((mb[a.fleisch]||3700)+(da[a.milch]||600)+(ca[a.kaffee]||300))*(rm[a.regional]||1.0));
+  const cb={c01:150,c23:350,c46:650,c7p:1100};
+  const shm={oft:0.45,mchm:0.72,nie:1.0};
+  const kleidung=Math.round((cb[a.kleidung]||350)*(shm[a.secondhand]||1.0));
+  const stv={oeko:20,mix:80,unkn:80};
+  const hzv={gas:80,wp:15,fw:30,holz:25};
+  const energie=(stv[a.strom]||80)+(hzv[a.heizung]||80);
+  const sonstiges=550;
+  return{haushalt,ernaehrung,kleidung,energie,sonstiges,total:haushalt+ernaehrung+kleidung+energie+sonstiges};
+}
+
+function getRating(t){
+  if(t<2800)return{l:'Sehr niedrig',bg:'var(--color-background-success)',tc:'var(--color-text-success)',bc:'var(--color-border-success)'};
+  if(t<4200)return{l:'Niedrig',bg:'var(--color-background-success)',tc:'var(--color-text-success)',bc:'var(--color-border-success)'};
+  if(t<5800)return{l:'Durchschnittlich',bg:'var(--color-background-warning)',tc:'var(--color-text-warning)',bc:'var(--color-border-warning)'};
+  if(t<7200)return{l:'Hoch',bg:'var(--color-background-danger)',tc:'var(--color-text-danger)',bc:'var(--color-border-danger)'};
+  return{l:'Sehr hoch',bg:'var(--color-background-danger)',tc:'var(--color-text-danger)',bc:'var(--color-border-danger)'};
+}
+
+function getTips(fp){
+  const ts=[];
+  if(fp.ernaehrung>3200)ts.push({ic:'ti-leaf',t:'Weniger Fleisch essen hat den größten Einfluss – schon eine fleischfreie Woche spart tausende Liter.'});
+  else ts.push({ic:'ti-leaf',t:'Deine Ernährung ist schon recht wassereffizient. Noch mehr regionale und saisonale Produkte helfen weiter.'});
+  if(fp.kleidung>350)ts.push({ic:'ti-recycle',t:'Second-Hand-Kleidung spart nahezu 100% des virtuellen Wassers pro Kleidungsstück.'});
+  if(fp.haushalt>200)ts.push({ic:'ti-droplet',t:'5 Minuten kürzer duschen spart ca. 50 Liter täglich – das sind über 18.000 Liter pro Jahr.'});
+  if(fp.energie>120)ts.push({ic:'ti-bolt',t:'Ökostrom und eine Wärmepumpe können deinen Energiewasserfußabdruck um mehr als die Hälfte senken.'});
+  if(ts.length<2)ts.push({ic:'ti-star',t:'Hervorragend! Dein Wasserfußabdruck liegt weit unter dem deutschen Durchschnitt.'});
+  return ts.slice(0,3);
+}
+
+let st={phase:'intro',step:0,ans:{}};
+const el=document.getElementById('wfr');
+
+function fade(fn){
+  el.style.opacity='0';
+  el.style.transition='opacity 0.17s';
+  setTimeout(()=>{fn();el.style.opacity='1';},180);
+}
+
+function render(){
+  if(st.phase==='intro'){
+    el.innerHTML=`<div class="wfr-s" style="text-align:center;padding:1.5rem 0 1rem;">
+<div style="width:52px;height:52px;background:var(--color-background-info);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;"><i class="ti ti-droplet" style="font-size:26px;color:var(--color-text-info);" aria-hidden="true"></i></div>
+<h3 style="font-size:19px;font-weight:500;margin:0 0 0.6rem;color:var(--color-text-primary);">Wasserfußabdruck-Rechner</h3>
+<p style="color:var(--color-text-secondary);font-size:14px;line-height:1.65;margin:0 auto 1.25rem;max-width:440px;">Der durchschnittliche Deutsche verbraucht täglich <span style="font-weight:500;color:var(--color-text-primary);">5.288 Liter</span> Wasser – das meiste davon versteckt in Lebensmitteln, Kleidung und Energie. Berechne deinen persönlichen Anteil in <span style="font-weight:500;color:var(--color-text-primary);">11 Fragen</span>.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;">${['haushalt','ernaehrung','kleidung','energie'].map(k=>`<span class="wfr-bdg" style="background:${CAT[k].bg};color:${CAT[k].tc};border-color:${CAT[k].col};"><i class="ti ${CAT[k].ic}" style="font-size:13px;" aria-hidden="true"></i> ${CAT[k].l}</span>`).join('')}</div>
+<button onclick="wfrS()" style="padding:10px 26px;font-size:14px;font-weight:500;">Rechner starten <i class="ti ti-arrow-right" style="font-size:14px;vertical-align:-2px;" aria-hidden="true"></i></button>
+<p style="margin-top:10px;font-size:12px;color:var(--color-text-secondary);">Ca. 3 Minuten · Kein Login nötig</p>
+</div>`;
+  } else if(st.phase==='quiz'){
+    const q=QS[st.step];
+    const cat=CAT[q.cat];
+    const prog=Math.round((st.step/QS.length)*100);
+    el.innerHTML=`<div class="wfr-s">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span class="wfr-bdg" style="background:${cat.bg};color:${cat.tc};border-color:${cat.col};"><i class="ti ${cat.ic}" style="font-size:13px;" aria-hidden="true"></i> ${cat.l}</span><span style="font-size:12px;color:var(--color-text-secondary);">${st.step+1} / ${QS.length}</span></div>
+<div class="wfr-pb"><div class="wfr-pf" style="width:${prog}%;background:${cat.col};"></div></div>
+<h3 style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin:0 0 0.4rem;line-height:1.4;">${q.q}</h3>
+<p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 1rem;line-height:1.5;"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>${q.hint}</p>
+${q.opts.map(o=>`<button class="wfr-opt" onclick="wfrA(this)" data-v="${o.v}"><div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.3;">${o.l}</div>${o.s?`<div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px;">${o.s}</div>`:''}</div></button>`).join('')}
+<button onclick="wfrB()" style="background:none;border:none;padding:8px 0;font-size:13px;color:var(--color-text-secondary);cursor:pointer;font-family:inherit;"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-1px;" aria-hidden="true"></i> Zurück</button>
+</div>`;
+  } else {
+    const fp=calc(st.ans);
+    const r=getRating(fp.total);
+    const m3=Math.round(fp.total*365/1000);
+    const scale=Math.max(fp.total,GA)*1.12;
+    const myW=Math.round((fp.total/scale)*100);
+    const avgW=Math.round((GA/scale)*100);
+    const ts=getTips(fp);
+    const ck=[['haushalt',fp.haushalt],['ernaehrung',fp.ernaehrung],['kleidung',fp.kleidung],['energie',fp.energie],['sonstiges',fp.sonstiges]];
+    const mx=Math.max(...ck.map(([,v])=>v));
+    el.innerHTML=`<div class="wfr-s">
+<div style="text-align:center;padding:1rem 0 1.25rem;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.25rem;">
+<div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:5px;">Dein täglicher Wasserfußabdruck</div>
+<div style="font-size:52px;font-weight:500;color:${r.tc};line-height:1;">${fp.total.toLocaleString('de-DE')}</div>
+<div style="font-size:15px;color:var(--color-text-secondary);margin:3px 0 2px;">Liter pro Tag</div>
+<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;">${m3.toLocaleString('de-DE')} m³ pro Jahr</div>
+<span class="wfr-bdg" style="background:${r.bg};color:${r.tc};border-color:${r.bc};font-size:13px;padding:5px 12px;">${r.l}</span>
+</div>
+<div style="margin-bottom:1.25rem;">
+<div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;">Vergleich mit dem deutschen Durchschnitt</div>
+<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;"><span>Du: ${fp.total.toLocaleString('de-DE')} L/Tag</span><span>${Math.round((fp.total/GA)*100)} % des Ø</span></div><div class="wfr-bbar"><div class="wfr-bf" style="width:${myW}%;background:${r.tc};"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;"><span>Ø Deutschland: 5.288 L/Tag</span><span>100 %</span></div><div class="wfr-bbar"><div class="wfr-bf" style="width:${avgW}%;background:var(--color-border-info);"></div></div></div>
+</div>
+<div style="margin-bottom:1.25rem;">
+<div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;">Aufschlüsselung nach Kategorien</div>
+${ck.map(([k,v])=>{const c=CAT[k];const w=Math.round((v/mx)*100);const p=Math.round((v/fp.total)*100);return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;"><span style="font-size:13px;color:var(--color-text-secondary);"><i class="ti ${c.ic}" style="font-size:13px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>${c.l}</span><span style="font-size:13px;font-weight:500;color:${c.tc};">${v.toLocaleString('de-DE')} L <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px;">${p} %</span></span></div><div class="wfr-bbar"><div class="wfr-bf" style="width:${w}%;background:${c.col};"></div></div></div>`;}).join('')}
+</div>
+<div style="background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-lg);padding:13px 15px;margin-bottom:1.25rem;">
+<div style="font-size:13px;font-weight:500;color:var(--color-text-success);margin-bottom:8px;"><i class="ti ti-bulb" style="font-size:14px;vertical-align:-2px;margin-right:4px;" aria-hidden="true"></i>Tipps für dich</div>
+${ts.map((t,i)=>`<div style="display:flex;gap:8px;${i<ts.length-1?'margin-bottom:8px;':''}"><i class="ti ${t.ic}" style="font-size:15px;margin-top:1px;flex-shrink:0;color:var(--color-text-success);" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;">${t.t}</span></div>`).join('')}
+</div>
+<button onclick="wfrR()" style="width:100%;padding:10px;font-size:14px;font-weight:500;font-family:inherit;"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px;margin-right:5px;" aria-hidden="true"></i>Neu berechnen</button>
+<div style="margin-top:10px;font-size:11px;color:var(--color-text-secondary);text-align:center;line-height:1.5;">Quellen: Umweltbundesamt (2021), WWF Deutschland, Water Footprint Network (Hoekstra et al.)</div>
+</div>`;
+  }
+}
+
+window.wfrS=()=>fade(()=>{st.phase='quiz';render();});
+window.wfrA=(btn)=>{
+  const v=btn.getAttribute('data-v');
+  st.ans[QS[st.step].id]=v;
+  if(st.step<QS.length-1)fade(()=>{st.step++;render();});
+  else fade(()=>{st.phase='result';render();});
+};
+window.wfrB=()=>{
+  if(st.step>0)fade(()=>{st.step--;render();});
+  else fade(()=>{st.phase='intro';render();});
+};
+window.wfrR=()=>fade(()=>{st={phase:'intro',step:0,ans:{}};render();});
+render();
+})();
+</script>
