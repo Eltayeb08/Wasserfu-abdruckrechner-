@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wasserfußabdruck-Rechner</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/tabler-icons.min.css">
+</head>
+<body>
+
 <h2 class="sr-only">Persönlicher Wasserfußabdruck-Rechner für Deutschland – Berechne deinen täglichen Wasserverbrauch in Litern</h2>
 <div id="wfr" style="padding:0.5rem 0;"></div>
 <style>
@@ -42,7 +52,7 @@
 /* Ab hier folgt dein exakter Original-Style */
 .wfr-s{animation:wfr-fi 0.2s ease}
 @keyframes wfr-fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.wfr-opt{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;text-align:left;margin-bottom:8px;font-family:inherit;font-size:inherit}
+.wfr-opt{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);cursor:pointer;transition:all 0.15s}
 .wfr-opt:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
 .wfr-opt:active{transform:scale(0.99)}
 .wfr-pb{height:3px;background:var(--color-background-secondary);border-radius:3px;margin-bottom:1.4rem;overflow:hidden}
@@ -79,17 +89,17 @@ const CAT={
   sonstiges:{l:'Sonstiges',ic:'ti-package',col:'var(--color-border-tertiary)',bg:'var(--color-background-secondary)',tc:'var(--color-text-secondary)'},
 };
 const QS=[
-  {id:'groesse',cat:'haushalt',q:'Wie viele Personen leben in deinem Haushalt?',hint:'Gemeinsam genutzte Ressourcen werden anteilig berechnet.',opts:[{v:'1',l:'1 Person',s:'Alleine wohnen'},{v:'2',l:'2 Personen',s:'Paar oder WG-Zimmer'},{v:'3-4',l:'3–4 Personen',s:'Kleine Familie oder WG'},{v:'5p',l:'5 oder mehr',s:'Großhaushalt'}]},
-  {id:'duschen',cat:'haushalt',q:'Wie lange duscht oder badest du täglich?',hint:'Eine 10-Minuten-Dusche verbraucht ca. 100 Liter Wasser.',opts:[{v:'lt5',l:'Kurze Dusche',s:'Unter 5 Minuten'},{v:'5-10',l:'Normale Dusche',s:'5–10 Minuten'},{v:'gt10',l:'Lange Dusche',s:'Über 10 Minuten'},{v:'bad',l:'Vollbad',s:'Täglich Badewanne'}]},
-  {id:'waesche',cat:'haushalt',q:'Wie oft wäschst du Wäsche pro Woche?',hint:'Ein Waschgang verbraucht ca. 50–70 Liter Wasser.',opts:[{v:'1x',l:'1× oder seltener',s:''},{v:'2-3x',l:'2–3× pro Woche',s:''},{v:'4px',l:'4× oder öfter',s:''}]},
-  {id:'fleisch',cat:'ernaehrung',q:'Wie oft isst du Fleisch oder Fisch?',hint:'Für 1 kg Rindfleisch werden bis zu 15.000 Liter Wasser benötigt.',opts:[{v:'vegan',l:'Vegan',s:'Keine tierischen Produkte'},{v:'veg',l:'Vegetarisch',s:'Kein Fleisch oder Fisch'},{v:'sel',l:'Gelegentlich',s:'2–3× pro Woche'},{v:'tgl',l:'Täglich',s:'Ca. einmal täglich'},{v:'oft',l:'Sehr oft',s:'Mehrmals täglich'}]},
-  {id:'milch',cat:'ernaehrung',q:'Wie viele Milchprodukte konsumierst du täglich?',hint:'1 Liter Kuhmilch benötigt ca. 1.000 Liter Wasser bei der Produktion.',opts:[{v:'keine',l:'Keine',s:'Pflanzliche Alternativen'},{v:'wenig',l:'Wenig',s:'1 Portion täglich'},{v:'norm',l:'Normal',s:'2–3 Portionen'},{v:'viel',l:'Viel',s:'4+ Portionen täglich'}]},
-  {id:'kaffee',cat:'ernaehrung',q:'Wie viel Kaffee oder Tee trinkst du täglich?',hint:'Eine Tasse Kaffee enthält ca. 132 Liter virtuelles Wasser – Tee nur ca. 30 Liter.',opts:[{v:'k0',l:'Keinen / keinen',s:'Nur Wasser oder Säfte'},{v:'k1',l:'1 Tasse',s:''},{v:'k23',l:'2–3 Tassen',s:''},{v:'k4p',l:'4+ Tassen',s:''}]},
-  {id:'regional',cat:'ernaehrung',q:'Kaufst du Lebensmittel regional und saisonal?',hint:'Regionale Produkte schonen Wasserressourcen in wasserarmen Erzeugerländern.',opts:[{v:'ja',l:'Meist ja',s:'Wochenmarkt, Bioläden, Direktkauf'},{v:'mchm',l:'Manchmal',s:'Gemischter Einkauf'},{v:'nein',l:'Selten oder nie',s:'Supermarkt, viele Importwaren'}]},
-  {id:'kleidung',cat:'kleidung',q:'Wie viele neue Kleidungsstücke kaufst du pro Monat?',hint:'Ein T-Shirt benötigt ca. 2.700 Liter, eine Jeans ca. 8.000 Liter Wasser.',opts:[{v:'c01',l:'0–1 Stück',s:'Ich kaufe kaum neu'},{v:'c23',l:'2–3 Stücke',s:''},{v:'c46',l:'4–6 Stücke',s:''},{v:'c7p',l:'7 oder mehr',s:'Fast Fashion'}]},
-  {id:'secondhand',cat:'kleidung',q:'Kaufst du auch Second-Hand-Kleidung?',hint:'Gebrauchte Kleidung spart nahezu 100% des virtuellen Wassers eines Kleidungsstücks.',opts:[{v:'oft',l:'Oft',s:'Hauptsächlich Second-Hand'},{v:'mchm',l:'Manchmal',s:''},{v:'nie',l:'Selten oder nie',s:''}]},
-  {id:'strom',cat:'energie',q:'Welchen Strom beziehst du?',hint:'Kohle- und Gaskraftwerke brauchen viel Kühlwasser – Solar und Wind kaum.',opts:[{v:'oeko',l:'Ökostrom',s:'Wind, Solar, Wasserkraft'},{v:'mix',l:'Standard-Mix',s:'Normaler Haushaltstarif'},{v:'unkn',l:'Weiß ich nicht',s:''}]},
-  {id:'heizung',cat:'energie',q:'Womit wird dein Zuhause hauptsächlich beheizt?',hint:'Gas- und Ölheizungen benötigen indirekt mehr Wasser als erneuerbare Alternativen.',opts:[{v:'gas',l:'Gas oder Öl',s:'Fossile Brennstoffe'},{v:'wp',l:'Wärmepumpe',s:'Elektrisch betrieben'},{v:'fw',l:'Fernwärme',s:'Zentralversorgung'},{v:'holz',l:'Holz oder Biomasse',s:'Nachwachsende Rohstoffe'}]},
+  {id:'groesse',cat:'haushalt',q:'Wie viele Personen leben in deinem Haushalt?',hint:'Gemeinsam genutzte Ressourcen werden anteilig berechnet.',opts:[{v:'1',l:'1 Person',s:'Alleine wohnen'},{v:'2',l:'2 Personen',s:''},{v:'3-4',l:'3–4 Personen',s:''},{v:'5p',l:'5+ Personen',s:'Größerer Haushalt'}]},
+  {id:'duschen',cat:'haushalt',q:'Wie lange duscht oder badest du täglich?',hint:'Eine 10-Minuten-Dusche verbraucht ca. 100 Liter Wasser.',opts:[{v:'lt5',l:'Kurze Dusche',s:'Unter 5 Minuten'},{v:'5-10',l:'Normale Dusche',s:'5–10 Minuten'},{v:'gt10',l:'Lange Dusche',s:'Über 10 Minuten'},{v:'bad',l:'Bad',s:'Ca. 150–200 Liter'}]},
+  {id:'waesche',cat:'haushalt',q:'Wie oft wäschst du Wäsche pro Woche?',hint:'Ein Waschgang verbraucht ca. 50–70 Liter Wasser.',opts:[{v:'1x',l:'1× oder seltener',s:''},{v:'2-3x',l:'2–3× pro Woche',s:''},{v:'4px',l:'4+ × pro Woche',s:'Mehrmals wöchentlich'}]},
+  {id:'fleisch',cat:'ernaehrung',q:'Wie oft isst du Fleisch oder Fisch?',hint:'Für 1 kg Rindfleisch werden bis zu 15.000 Liter Wasser benötigt.',opts:[{v:'vegan',l:'Vegan',s:'Keine tierischen Produkte'},{v:'veg',l:'Vegetarisch',s:'Kein Fleisch/Fisch'},{v:'sel',l:'Selten',s:'1–2× pro Woche'},{v:'tgl',l:'Regelmäßig',s:'3–5× pro Woche'},{v:'oft',l:'Täglich oder öfter',s:''}]},
+  {id:'milch',cat:'ernaehrung',q:'Wie viele Milchprodukte konsumierst du täglich?',hint:'1 Liter Kuhmilch benötigt ca. 1.000 Liter Wasser bei der Produktion.',opts:[{v:'keine',l:'Keine',s:'Pflanzliche Alternativen'},{v:'wenig',l:'Wenig',s:'Gelegentlich'},{v:'norm',l:'Normal',s:'Täglich etwas'},{v:'viel',l:'Viel',s:'Mehrmals täglich'}]},
+  {id:'kaffee',cat:'ernaehrung',q:'Wie viel Kaffee oder Tee trinkst du täglich?',hint:'Eine Tasse Kaffee enthält ca. 132 Liter virtuelles Wasser – Tee nur ca. 30 Liter.',opts:[{v:'k0',l:'Keine',s:''},{v:'k1',l:'Eine Tasse',s:'Ca. 1 pro Tag'},{v:'k23',l:'2–3 Tassen',s:''},{v:'k4p',l:'4+ Tassen',s:'Mehrere pro Tag'}]},
+  {id:'regional',cat:'ernaehrung',q:'Kaufst du Lebensmittel regional und saisonal?',hint:'Regionale Produkte schonen Wasserressourcen in wasserarmen Erzeugerländern.',opts:[{v:'ja',l:'Meist ja',s:'Überwiegend regional'},{v:'mchm',l:'Manchmal',s:'Mix aus regional & importiert'},{v:'nein',l:'Nein',s:'Meist Importware'}]},
+  {id:'kleidung',cat:'kleidung',q:'Wie viele neue Kleidungsstücke kaufst du pro Monat?',hint:'Ein T-Shirt benötigt ca. 2.700 Liter, eine Jeans ca. 8.000 Liter Wasser.',opts:[{v:'c01',l:'0–1 Stück',s:'Sehr wenig'},{v:'c23',l:'2–3 Stücke',s:'Gelegentlich'},{v:'c46',l:'4–6 Stücke',s:'Regelmäßig'},{v:'c7p',l:'7+ Stücke',s:'Viel Shopping'}]},
+  {id:'secondhand',cat:'kleidung',q:'Kaufst du auch Second-Hand-Kleidung?',hint:'Gebrauchte Kleidung spart nahezu 100% des virtuellen Wassers eines Kleidungsstücks.',opts:[{v:'oft',l:'Oft',s:'Hauptsächlich gebraucht'},{v:'mchm',l:'Manchmal',s:'Mix aus neu & gebraucht'},{v:'nie',l:'Nie',s:'Nur neue Kleidung'}]},
+  {id:'strom',cat:'energie',q:'Welchen Strom beziehst du?',hint:'Kohle- und Gaskraftwerke brauchen viel Kühlwasser – Solar und Wind kaum.',opts:[{v:'oeko',l:'Ökostrom',s:'Wind, Solar, Wasserkraft'},{v:'mix',l:'Gemischter Mix',s:'Durchschnittlicher Strommix'},{v:'unkn',l:'Weiß nicht',s:''}]},
+  {id:'heizung',cat:'energie',q:'Womit wird dein Zuhause hauptsächlich beheizt?',hint:'Gas- und Ölheizungen benötigen indirekt mehr Wasser als erneuerbare Alternativen.',opts:[{v:'gas',l:'Gas oder Öl',s:'Fossile Brennstoffe'},{v:'wp',l:'Wärmepumpe',s:'Erneuerbar effizient'},{v:'fw',l:'Fernwärme',s:'Großanlage'},{v:'holz',l:'Holz/Biomasse',s:'Erneuerbar'}]},
 ];
 
 function calc(a){
@@ -143,10 +153,10 @@ function fade(fn){
 function render(){
   if(st.phase==='intro'){
     el.innerHTML=`<div class="wfr-s" style="text-align:center;padding:1.5rem 0 1rem;">
-<div style="width:52px;height:52px;background:var(--color-background-info);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;"><i class="ti ti-droplet" style="font-size:26px;color:var(--color-text-info);" aria-hidden="true"></i></div>
+<div style="width:52px;height:52px;background:var(--color-background-info);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;"><i class="ti ti-droplet" style="font-size:28px;color:var(--color-border-info);" aria-hidden="true"></i></div>
 <h3 style="font-size:19px;font-weight:500;margin:0 0 0.6rem;color:var(--color-text-primary);">Wasserfußabdruck-Rechner</h3>
-<p style="color:var(--color-text-secondary);font-size:14px;line-height:1.65;margin:0 auto 1.25rem;max-width:440px;">Der durchschnittliche Deutsche verbraucht täglich <span style="font-weight:500;color:var(--color-text-primary);">5.288 Liter</span> Wasser – das meiste davon versteckt in Lebensmitteln, Kleidung und Energie. Berechne deinen persönlichen Anteil in <span style="font-weight:500;color:var(--color-text-primary);">11 Fragen</span>.</p>
-<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;">${['haushalt','ernaehrung','kleidung','energie'].map(k=>`<span class="wfr-bdg" style="background:${CAT[k].bg};color:${CAT[k].tc};border-color:${CAT[k].col};"><i class="ti ${CAT[k].ic}" style="font-size:13px;" aria-hidden="true"></i> ${CAT[k].l}</span>`).join('')}</div>
+<p style="color:var(--color-text-secondary);font-size:14px;line-height:1.65;margin:0 auto 1.25rem;max-width:440px;">Der durchschnittliche Deutsche verbraucht täglich <span style="font-weight:500">5.288 Liter virtuelles Wasser</span> – mehr als dreimal so viel wie weltweit empfohlen.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;">${['haushalt','ernaehrung','kleidung','energie'].map(k=>`<span class="wfr-bdg" style="background:${CAT[k].bg};color:${CAT[k].tc};border-color:${CAT[k].col};"><i class="ti ${CAT[k].ic}" style="font-size:13px;" aria-hidden="true"></i>${CAT[k].l}</span>`).join('')}</div>
 <button onclick="wfrS()" style="padding:10px 26px;font-size:14px;font-weight:500;">Rechner starten <i class="ti ti-arrow-right" style="font-size:14px;vertical-align:-2px;" aria-hidden="true"></i></button>
 <p style="margin-top:10px;font-size:12px;color:var(--color-text-secondary);">Ca. 3 Minuten · Kein Login nötig</p>
 </div>`;
@@ -155,12 +165,12 @@ function render(){
     const cat=CAT[q.cat];
     const prog=Math.round((st.step/QS.length)*100);
     el.innerHTML=`<div class="wfr-s">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span class="wfr-bdg" style="background:${cat.bg};color:${cat.tc};border-color:${cat.col};"><i class="ti ${cat.ic}" style="font-size:13px;" aria-hidden="true"></i> ${cat.l}</span><span style="font-size:12px;color:var(--color-text-secondary);">${st.step+1} / ${QS.length}</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span class="wfr-bdg" style="background:${cat.bg};color:${cat.tc};border-color:${cat.col};"><i class="ti ${cat.ic}" style="font-size:13px;" aria-hidden="true"></i>${cat.l}</span><span style="font-size:12px;color:var(--color-text-secondary);">${st.step+1}/${QS.length}</span></div>
 <div class="wfr-pb"><div class="wfr-pf" style="width:${prog}%;background:${cat.col};"></div></div>
 <h3 style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin:0 0 0.4rem;line-height:1.4;">${q.q}</h3>
 <p style="font-size:13px;color:var(--color-text-secondary);margin:0 0 1rem;line-height:1.5;"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>${q.hint}</p>
-${q.opts.map(o=>`<button class="wfr-opt" onclick="wfrA(this)" data-v="${o.v}"><div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.3;">${o.l}</div>${o.s?`<div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px;">${o.s}</div>`:''}</div></button>`).join('')}
-<button onclick="wfrB()" style="background:none;border:none;padding:8px 0;font-size:13px;color:var(--color-text-secondary);cursor:pointer;font-family:inherit;"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-1px;" aria-hidden="true"></i> Zurück</button>
+${q.opts.map(o=>`<button class="wfr-opt" onclick="wfrA(this)" data-v="${o.v}"><div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.3;">${o.l}</div>${o.s?`<div style="font-size:12px;color:var(--color-text-secondary);">${o.s}</div>`:''}</div></button>`).join('')}
+<button onclick="wfrB()" style="background:none;border:none;padding:8px 0;font-size:13px;color:var(--color-text-secondary);cursor:pointer;font-family:inherit;"><i class="ti ti-arrow-left" style="font-size:12px;vertical-align:-1px;margin-right:4px;" aria-hidden="true"></i>Zurück</button>
 </div>`;
   } else {
     const fp=calc(st.ans);
@@ -182,19 +192,19 @@ ${q.opts.map(o=>`<button class="wfr-opt" onclick="wfrA(this)" data-v="${o.v}"><d
 </div>
 <div style="margin-bottom:1.25rem;">
 <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;">Vergleich mit dem deutschen Durchschnitt</div>
-<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;"><span>Du: ${fp.total.toLocaleString('de-DE')} L/Tag</span><span>${Math.round((fp.total/GA)*100)} % des Ø</span></div><div class="wfr-bbar"><div class="wfr-bf" style="width:${myW}%;background:${r.tc};"></div></div></div>
-<div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;"><span>Ø Deutschland: 5.288 L/Tag</span><span>100 %</span></div><div class="wfr-bbar"><div class="wfr-bf" style="width:${avgW}%;background:var(--color-border-info);"></div></div></div>
+<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;"><span>Du: ${fp.total.toLocaleString('de-DE')} L/Tag</span><span>${Math.round((fp.total/GA)*100)} %</span></div><div style="height:12px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;"><div class="wfr-bf" style="width:${myW}%;background:${r.bc};"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;"><span>Ø Deutschland: 5.288 L/Tag</span><span>100 %</span></div><div style="height:12px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;"><div class="wfr-bf" style="width:${avgW}%;background:var(--color-border-secondary);"></div></div></div>
 </div>
 <div style="margin-bottom:1.25rem;">
 <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;">Aufschlüsselung nach Kategorien</div>
-${ck.map(([k,v])=>{const c=CAT[k];const w=Math.round((v/mx)*100);const p=Math.round((v/fp.total)*100);return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;"><span style="font-size:13px;color:var(--color-text-secondary);"><i class="ti ${c.ic}" style="font-size:13px;vertical-align:-1px;margin-right:3px;" aria-hidden="true"></i>${c.l}</span><span style="font-size:13px;font-weight:500;color:${c.tc};">${v.toLocaleString('de-DE')} L <span style="font-weight:400;color:var(--color-text-secondary);font-size:11px;">${p} %</span></span></div><div class="wfr-bbar"><div class="wfr-bf" style="width:${w}%;background:${c.col};"></div></div></div>`;}).join('')}
+${ck.map(([k,v])=>{const c=CAT[k];const w=Math.round((v/mx)*100);const p=Math.round((v/fp.total)*100);return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span style="color:var(--color-text-primary);font-weight:500;"><i class="ti ${c.ic}" style="font-size:12px;vertical-align:-1px;margin-right:4px;" aria-hidden="true"></i>${c.l}</span><span style="color:var(--color-text-secondary);">${v.toLocaleString('de-DE')} L (${p}%)</span></div><div style="height:8px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden;"><div class="wfr-bf" style="width:${w}%;background:${c.col};"></div></div></div>`}).join('')}
 </div>
 <div style="background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-lg);padding:13px 15px;margin-bottom:1.25rem;">
-<div style="font-size:13px;font-weight:500;color:var(--color-text-success);margin-bottom:8px;"><i class="ti ti-bulb" style="font-size:14px;vertical-align:-2px;margin-right:4px;" aria-hidden="true"></i>Tipps für dich</div>
-${ts.map((t,i)=>`<div style="display:flex;gap:8px;${i<ts.length-1?'margin-bottom:8px;':''}"><i class="ti ${t.ic}" style="font-size:15px;margin-top:1px;flex-shrink:0;color:var(--color-text-success);" aria-hidden="true"></i><span style="font-size:13px;color:var(--color-text-secondary);line-height:1.5;">${t.t}</span></div>`).join('')}
+<div style="font-size:13px;font-weight:500;color:var(--color-text-success);margin-bottom:8px;"><i class="ti ti-bulb" style="font-size:14px;vertical-align:-2px;margin-right:4px;" aria-hidden="true"></i>Tipps zur Senkung deines Wasserfußabdrucks</div>
+${ts.map((t,i)=>`<div style="display:flex;gap:8px;${i<ts.length-1?'margin-bottom:8px;':''}"><i class="ti ${t.ic}" style="font-size:15px;margin-top:1px;flex-shrink:0;color:var(--color-text-success);" aria-hidden="true"></i><span style="font-size:13px;line-height:1.5;color:var(--color-text-success);">${t.t}</span></div>`).join('')}
 </div>
 <button onclick="wfrR()" style="width:100%;padding:10px;font-size:14px;font-weight:500;font-family:inherit;"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px;margin-right:5px;" aria-hidden="true"></i>Neu berechnen</button>
-<div style="margin-top:10px;font-size:11px;color:var(--color-text-secondary);text-align:center;line-height:1.5;">Quellen: Umweltbundesamt (2021), WWF Deutschland, Water Footprint Network (Hoekstra et al.)</div>
+<div style="margin-top:10px;font-size:11px;color:var(--color-text-secondary);text-align:center;line-height:1.5;">Quellen: Umweltbundesamt (2021), WWF Deutschland, Water Footprint Network (Hoekstra & Mekonnen)</div>
 </div>`;
   }
 }
@@ -214,3 +224,6 @@ window.wfrR=()=>fade(()=>{st={phase:'intro',step:0,ans:{}};render();});
 render();
 })();
 </script>
+
+</body>
+</html>
